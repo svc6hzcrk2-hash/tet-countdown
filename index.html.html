@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Đếm ngược Tết Nguyên Đán</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#fff8ee;--card:#ffffff;--text:#3a1410;--muted:#8a5a4a;--accent:#c8102e;--gold:#b8860b;--border:#f0d9b8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a0d0d;--card:#3d1515;--text:#fff1d6;--muted:#d9b48a;--accent:#ff5a5f;--gold:#f5c542;--border:#5c2323}}
+:root[data-theme="dark"]{--bg:#2a0d0d;--card:#3d1515;--text:#fff1d6;--muted:#d9b48a;--accent:#ff5a5f;--gold:#f5c542;--border:#5c2323}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center}
+main{width:100%;max-width:560px}
+h1{font-size:1.6rem;margin:0 0 4px;color:var(--accent)}
+.sub{color:var(--muted);margin:0 0 24px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 4px}
+.num{font-size:clamp(1.8rem,9vw,2.8rem);font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+.lbl{font-size:.8rem;color:var(--muted);margin-top:4px}
+.msg{margin:20px 0 0;font-size:1.3rem;color:var(--accent);min-height:1.5em}
+.ctl{margin-top:24px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center}
+input{padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font:inherit}
+button{padding:10px 20px;border:0;border-radius:10px;background:var(--accent);color:#fff;font:inherit;font-weight:600;cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+<h1>🧧 Đếm ngược đến Tết Nguyên Đán</h1>
+<p class="sub" id="sub"></p>
+<div class="grid">
+<div class="box"><div class="num" id="d">0</div><div class="lbl">Ngày</div></div>
+<div class="box"><div class="num" id="h">00</div><div class="lbl">Giờ</div></div>
+<div class="box"><div class="num" id="m">00</div><div class="lbl">Phút</div></div>
+<div class="box"><div class="num" id="s">00</div><div class="lbl">Giây</div></div>
+</div>
+<p class="msg" id="msg"></p>
+<div class="ctl">
+<input type="date" id="pick" aria-label="Chọn ngày đích">
+<button id="reset">Reset</button>
+</div>
+</main>
+<script>
+var DEFAULT="2027-02-06";
+var target=new Date(DEFAULT+"T00:00:00+07:00");
+var pick=document.getElementById("pick");
+function pad(n){return String(n).padStart(2,"0")}
+function label(){
+  document.getElementById("sub").textContent="Mồng 1 Tết: "+target.toLocaleDateString("vi-VN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Ho_Chi_Minh"});
+}
+function tick(){
+  var diff=target-new Date();
+  if(diff<=0){
+    ["d","h","m","s"].forEach(function(i){document.getElementById(i).textContent="0"});
+    document.getElementById("msg").textContent="🎆 Chúc mừng năm mới! 🎆";
+    return;
+  }
+  document.getElementById("msg").textContent="";
+  var t=Math.floor(diff/1000);
+  document.getElementById("d").textContent=Math.floor(t/86400);
+  document.getElementById("h").textContent=pad(Math.floor(t%86400/3600));
+  document.getElementById("m").textContent=pad(Math.floor(t%3600/60));
+  document.getElementById("s").textContent=pad(t%60);
+}
+pick.addEventListener("change",function(){
+  if(!pick.value)return;
+  target=new Date(pick.value+"T00:00:00+07:00");
+  label();tick();
+});
+document.getElementById("reset").addEventListener("click",function(){
+  target=new Date(DEFAULT+"T00:00:00+07:00");
+  pick.value=DEFAULT;
+  label();tick();
+});
+pick.value=DEFAULT;
+label();tick();
+setInterval(tick,1000);
+</script>
+</body>
+</html>
